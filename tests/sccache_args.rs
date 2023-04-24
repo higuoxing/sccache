@@ -44,7 +44,16 @@ fn test_gcp_arg_check() -> Result<()> {
     ));
 
     stop_sccache()?;
+    let mut cmd = Command::new(SCCACHE_BIN.as_os_str());
+    cmd.arg("--start-server")
+        .env("SCCACHE_LOG", "debug")
+        .env("SCCACHE_GCS_KEY", "dummy_key_content");
 
+    cmd.assert().failure().stderr(predicate::str::contains(
+        "If setting GCS credentials, SCCACHE_GCS_BUCKET",
+    ));
+
+    stop_sccache()?;
     let mut cmd = Command::new(SCCACHE_BIN.as_os_str());
     cmd.arg("--start-server")
         .env("SCCACHE_LOG", "debug")

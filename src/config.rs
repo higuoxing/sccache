@@ -188,6 +188,7 @@ pub struct GCSCacheConfig {
     pub bucket: String,
     pub key_prefix: String,
     pub cred_path: Option<String>,
+    pub cred_content: Option<String>,
     pub service_account: Option<String>,
     pub rw_mode: GCSCacheRWMode,
     pub credential_url: Option<String>,
@@ -558,7 +559,8 @@ fn config_from_env() -> Result<EnvConfig> {
     // ======= GCP/GCS =======
     if (env::var("SCCACHE_GCS_CREDENTIALS_URL").is_ok()
         || env::var("SCCACHE_GCS_OAUTH_URL").is_ok()
-        || env::var("SCCACHE_GCS_KEY_PATH").is_ok())
+        || env::var("SCCACHE_GCS_KEY_PATH").is_ok()
+        || env::var("SCCACHE_GCS_KEY").is_ok())
         && env::var("SCCACHE_GCS_BUCKET").is_err()
     {
         bail!(
@@ -585,6 +587,7 @@ fn config_from_env() -> Result<EnvConfig> {
         let credential_url = env::var("SCCACHE_GCS_CREDENTIALS_URL").ok();
 
         let cred_path = env::var("SCCACHE_GCS_KEY_PATH").ok();
+        let cred_content = env::var("SCCACHE_GCS_KEY").ok();
         let service_account = env::var("SCCACHE_GCS_SERVICE_ACCOUNT").ok();
 
         let rw_mode = match env::var("SCCACHE_GCS_RW_MODE").as_ref().map(String::as_str) {
@@ -606,6 +609,7 @@ fn config_from_env() -> Result<EnvConfig> {
             bucket,
             key_prefix,
             cred_path,
+            cred_content,
             service_account,
             rw_mode,
             credential_url,
@@ -1145,6 +1149,7 @@ size = 7516192768 # 7 GiBytes
 rw_mode = "READ_ONLY"
 # rw_mode = "READ_WRITE"
 cred_path = "/psst/secret/cred"
+cred_content = "dummy_content"
 bucket = "bucket"
 key_prefix = "prefix"
 service_account = "example_service_account"
@@ -1186,6 +1191,7 @@ key_prefix = "webdavprefix"
                 gcs: Some(GCSCacheConfig {
                     bucket: "bucket".to_owned(),
                     cred_path: Some("/psst/secret/cred".to_string()),
+                    cred_content: Some("dummy_content".to_string()),
                     service_account: Some("example_service_account".to_string()),
                     rw_mode: GCSCacheRWMode::ReadOnly,
                     key_prefix: "prefix".into(),

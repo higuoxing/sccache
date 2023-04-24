@@ -14,6 +14,7 @@
 // limitations under the License.
 
 use crate::errors::*;
+use base64::{prelude::BASE64_STANDARD, Engine};
 use opendal::Operator;
 use opendal::{layers::LoggingLayer, services::Gcs};
 use reqsign::{GoogleBuilder, GoogleToken, GoogleTokenLoad};
@@ -44,6 +45,7 @@ impl GCSCache {
         bucket: &str,
         key_prefix: &str,
         cred_path: Option<&str>,
+        cred_content: Option<&str>,
         service_account: Option<&str>,
         rw_mode: RWMode,
         credential_url: Option<&str>,
@@ -59,6 +61,9 @@ impl GCSCache {
         }
         if let Some(path) = cred_path {
             signer_builder.credential_path(path);
+        }
+        if let Some(content) = cred_content {
+            signer_builder.credential_content(BASE64_STANDARD.encode(content.as_bytes()).as_str());
         }
         if let Some(cred_url) = credential_url {
             let _ = Url::parse(cred_url)

@@ -6,7 +6,7 @@ By default, SCCACHE on GCS will be read-only. To change this, set `SCCACHE_GCS_R
 
 You can also define a prefix that will be prepended to the keys of all cache objects created and read within the GCS bucket, effectively creating a scope. To do that use the `SCCACHE_GCS_KEY_PREFIX` environment variable. This can be useful when sharing a bucket with another application.
 
-To create such account, in GCP, go in `APIs and Services` => `Cloud Storage` => `Create credentials` => `Service account`. Then, once created, click on the account then `Keys` => `Add key` => `Create new key`. Select the JSON format and here it is. This JSON file is what `SCCACHE_GCS_KEY_PATH` expects.
+To create such account, in GCP, go in `APIs and Services` => `Cloud Storage` => `Create credentials` => `Service account`. Then, once created, click on the account then `Keys` => `Add key` => `Create new key`. Select the JSON format and here it is. This JSON file is what `SCCACHE_GCS_KEY_PATH` expects. You can also load the JSON secret via environment variable `SCCACHE_GCS_KEY`.
 The service account needs `Storage Object Admin` permissions on the bucket (otherwise, sccache will fail with a simple `Permission denied`).
 
 To verify that it works, run:
@@ -25,6 +25,7 @@ Cache location                  GCS, bucket: Bucket(name=<bucket name in GCP>), 
 Sccache is able to load credentials from various sources. Including:
 
 - User Input: If `SCCACHE_GCS_KEY_PATH` has been set, we will load from key path first.
+- Environment Variable: `SCCACHE_GCS_KEY`.
 - [Task Cluster](https://taskcluster.net/): If `SCCACHE_GCS_CREDENTIALS_URL` has been set, we will load token from this url first.
 - Static: `GOOGLE_APPLICATION_CREDENTIALS`
 - Well-known locations:
